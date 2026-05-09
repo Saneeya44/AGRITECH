@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account — AgriTech</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="db.js"></script>
+    <script src="auth.js"></script>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+
+            <!-- Brand -->
+            <div class="auth-brand">
+                <div class="brand-icon">🌿</div>
+                <h1>AgriTech</h1>
+            </div>
+
+            <!-- Title -->
+            <h2 class="auth-title">Create your account</h2>
+            <p class="auth-subtitle">Join thousands of farmers using AI to protect their crops.</p>
+
+            <!-- Alert -->
+            <div id="authAlert" class="auth-alert error" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="authAlertMsg">Something went wrong.</span>
+            </div>
+
+            <!-- Signup Form -->
+            <form class="auth-form" id="signupForm" novalidate>
+
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="fullName">Full name</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="fullName"
+                            class="form-input"
+                            placeholder="e.g. Ramesh Kumar"
+                            autocomplete="name"
+                            required>
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <span class="field-error" id="nameError">Please enter your full name.</span>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="email"
+                            id="email"
+                            class="form-input"
+                            placeholder="farmer@example.com"
+                            autocomplete="email"
+                            required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <span class="field-error" id="emailError">Please enter a valid email.</span>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-input has-toggle"
+                            placeholder="Min. 8 characters"
+                            autocomplete="new-password"
+                            required>
+                        <i class="fa-solid fa-lock"></i>
+                        <button type="button" class="toggle-password" id="togglePwd" aria-label="Show password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- Strength indicator -->
+                    <div class="strength-bar-wrapper" id="strengthBar">
+                        <div class="strength-segment" id="seg1"></div>
+                        <div class="strength-segment" id="seg2"></div>
+                        <div class="strength-segment" id="seg3"></div>
+                        <div class="strength-segment" id="seg4"></div>
+                    </div>
+                    <p class="strength-label" id="strengthLabel"></p>
+                    <span class="field-error" id="passwordError">Password must be at least 8 characters.</span>
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm password</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            class="form-input has-toggle"
+                            placeholder="Re-enter your password"
+                            autocomplete="new-password"
+                            required>
+                        <i class="fa-solid fa-lock"></i>
+                        <button type="button" class="toggle-password" id="toggleConfirm" aria-label="Show password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="field-error" id="confirmError">Passwords do not match.</span>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-primary" id="signupBtn">
+                    <div class="spinner" id="signupSpinner"></div>
+                    <span id="signupBtnText"><i class="fa-solid fa-seedling"></i> Create Account</span>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="auth-divider" style="margin-top:20px;">or</div>
+
+            <!-- Google -->
+            <button class="btn-secondary" id="googleBtn" style="margin-top:12px;">
+                <div class="google-logo"></div>
+                Sign up with Google
+            </button>
+
+            <!-- Guest -->
+            <button class="btn-guest" id="guestBtn" style="margin-top:10px;">
+                <i class="fa-solid fa-user-slash"></i>
+                Try without an account
+            </button>
+
+            <!-- Footer -->
+            <p class="auth-footer">
+                Already have an account? <a href="login.html">Sign in</a>
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        const form          = document.getElementById('signupForm');
+        const nameEl        = document.getElementById('fullName');
+        const emailEl       = document.getElementById('email');
+        const passwordEl    = document.getElementById('password');
+        const confirmEl     = document.getElementById('confirmPassword');
+        const signupBtn     = document.getElementById('signupBtn');
+        const spinner       = document.getElementById('signupSpinner');
+        const btnText       = document.getElementById('signupBtnText');
+        const alert_        = document.getElementById('authAlert');
+        const alertMsg      = document.getElementById('authAlertMsg');
+        const googleBtn     = document.getElementById('googleBtn');
+        const guestBtn      = document.getElementById('guestBtn');
+        const togglePwd     = document.getElementById('togglePwd');
+        const toggleConfirm = document.getElementById('toggleConfirm');
+
+        // ── Helpers ──────────────────────────────────────────
+        function showAlert(msg, type = 'error') {
+            alert_.className = `auth-alert ${type} visible`;
+            alertMsg.textContent = msg;
+        }
+        function hideAlert() { alert_.classList.remove('visible'); }
+
+        function setLoading(loading) {
+            signupBtn.disabled = loading;
+            spinner.style.display = loading ? 'block' : 'none';
+            btnText.style.display = loading ? 'none' : 'flex';
+        }
+
+        function showFieldError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.classList.add('visible');
+        }
+        function clearErrors() {
+            ['nameError','emailError','passwordError','confirmError'].forEach(id => {
+                document.getElementById(id).classList.remove('visible');
+            });
+            hideAlert();
+        }
+
+        function friendlyError(code) {
+            const map = {
+                'auth/email-already-in-use': 'An account with this email already exists. Please sign in.',
+                'auth/invalid-email':        'Please enter a valid email address.',
+                'auth/weak-password':        'Password is too weak. Please choose a stronger one.',
+                'auth/network-request-failed': 'Network error. Check your connection.',
+            };
+            return map[code] || 'Sign up failed. Please try again.';
+        }
+
+        // ── Password toggle ───────────────────────────────────
+        [{ btn: togglePwd, input: passwordEl }, { btn: toggleConfirm, input: confirmEl }].forEach(({ btn, input }) => {
+            btn.addEventListener('click', () => {
+                const isText = input.type === 'text';
+                input.type = isText ? 'password' : 'text';
+                btn.querySelector('i').className = isText ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+            });
+        });
+
+        // ── Password strength ─────────────────────────────────
+        passwordEl.addEventListener('input', () => {
+            const val = passwordEl.value;
+            const segs = [document.getElementById('seg1'), document.getElementById('seg2'),
+                          document.getElementById('seg3'), document.getElementById('seg4')];
+            const label = document.getElementById('strengthLabel');
+
+            let score = 0;
+            if (val.length >= 8)  score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const colors = ['#ef4444', '#f59e0b', '#10b981', '#10b981'];
+            const labels = ['Weak', 'Fair', 'Good', 'Strong'];
+
+            segs.forEach((seg, i) => {
+                seg.style.background = i < score ? colors[score - 1] : 'var(--border-color)';
+            });
+
+            label.textContent = val.length > 0 ? labels[score - 1] || '' : '';
+            label.style.color = score > 0 ? colors[score - 1] : 'var(--text-muted)';
+        });
+
+        // ── Signup form submit ────────────────────────────────
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const name     = nameEl.value.trim();
+            const email    = emailEl.value.trim();
+            const password = passwordEl.value;
+            const confirm  = confirmEl.value;
+            let valid = true;
+
+            if (!name) { showFieldError('nameError', 'Please enter your full name.'); valid = false; }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showFieldError('emailError', 'Please enter a valid email address.'); valid = false;
+            }
+            if (!password || password.length < 8) {
+                showFieldError('passwordError', 'Password must be at least 8 characters.'); valid = false;
+            }
+            if (password !== confirm) {
+                showFieldError('confirmError', 'Passwords do not match.'); valid = false;
+            }
+            if (!valid) { form.classList.add('shake'); setTimeout(() => form.classList.remove('shake'), 400); return; }
+
+            if (!AuthService.isConfigured()) {
+                showAlert('Firebase not configured. Use Guest mode or add your Firebase config to auth.js.', 'error');
+                return;
+            }
+
+            setLoading(true);
+            try {
+                await AuthService.signUpWithEmail(email, password, name);
+                // Brief success flash before redirect
+                showAlert(`Welcome, ${name}! Redirecting to your dashboard...`, 'success');
+                setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+            } catch (err) {
+                showAlert(friendlyError(err.code));
+                form.classList.add('shake');
+                setTimeout(() => form.classList.remove('shake'), 400);
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // ── Google ────────────────────────────────────────────
+        googleBtn.addEventListener('click', async () => {
+            clearErrors();
+            if (!AuthService.isConfigured()) {
+                showAlert('Firebase not configured. Use Guest mode or add your Firebase config to auth.js.', 'error');
+                return;
+            }
+            try {
+                await AuthService.signInWithGoogle();
+                window.location.href = 'index.html';
+            } catch (err) {
+                showAlert(err.message || 'Google sign-in failed.');
+            }
+        });
+
+        // ── Guest ─────────────────────────────────────────────
+        guestBtn.addEventListener('click', async () => {
+            await AuthService.signInAsGuest();
+            window.location.href = 'index.html';
+        });
+
+    })();
+    </script>
+</body>
+</html>

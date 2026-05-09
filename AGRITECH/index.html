@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="app_title">AgriTech - AI Plant Disease Detection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- AI Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+</head>
+<body>
+    <!-- Offline Banner -->
+    <div id="offlineBanner" class="offline-banner">
+        <i class="fa-solid fa-wifi-slash"></i>
+        <span data-i18n="offline_banner">You are currently offline. Working in offline mode. Reports will be saved and synced later.</span>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-leaf logo-icon"></i>
+                <h2 data-i18n="app_title">AgriTech</h2>
+                <button class="close-sidebar" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <ul class="nav-links">
+                <li class="active"><a href="#"><i class="fa-solid fa-house"></i> <span data-i18n="sidebar_dashboard">Dashboard</span></a></li>
+                <li><a href="#"><i class="fa-solid fa-camera"></i> <span data-i18n="sidebar_detect">Detect Disease</span></a></li>
+                <li><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="sidebar_history">History</span></a></li>
+                <li><a href="#"><i class="fa-solid fa-book"></i> <span data-i18n="sidebar_guide">Crop Guide</span></a></li>
+                <li><a href="#"><i class="fa-solid fa-gear"></i> <span data-i18n="sidebar_settings">Settings</span></a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Navbar -->
+            <nav class="navbar">
+                <div class="nav-left">
+                    <button class="menu-btn" id="menuBtn"><i class="fa-solid fa-bars"></i></button>
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" placeholder="Search...">
+                    </div>
+                </div>
+                <div class="nav-right">
+                    <select id="languageSelector" class="language-dropdown glass-card">
+                        <option value="en">English</option>
+                        <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                        <option value="hi">हिंदी (Hindi)</option>
+                        <option value="ta">தமிழ் (Tamil)</option>
+                        <option value="te">తెలుగు (Telugu)</option>
+                        <option value="ml">മലയാളം (Malayalam)</option>
+                    </select>
+                    <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+
+                    <!-- User Profile Dropdown -->
+                    <div class="user-profile" id="userProfileBtn">
+                        <div class="profile-avatar" id="profileAvatar">
+                            <span id="profileInitials">U</span>
+                            <img id="profilePhoto" src="" alt="" style="display:none;">
+                        </div>
+                        <!-- Dropdown Panel -->
+                        <div class="profile-dropdown glass-card" id="profileDropdown">
+                            <div class="profile-info">
+                                <div class="profile-avatar-lg" id="profileAvatarLg">
+                                    <span id="profileInitialsLg">U</span>
+                                    <img id="profilePhotoLg" src="" alt="" style="display:none;">
+                                </div>
+                                <div>
+                                    <p id="profileName" class="profile-name">User</p>
+                                    <p id="profileEmail" class="profile-email">guest@agritech</p>
+                                </div>
+                            </div>
+                            <div class="profile-badge" id="profileBadge">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <span id="profileBadgeText">Logged in</span>
+                            </div>
+                            <div class="profile-dropdown-divider"></div>
+                            <button class="profile-signout" id="signOutBtn">
+                                <i class="fa-solid fa-right-from-bracket"></i> Sign Out
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="content-wrapper">
+                <!-- Hero Section -->
+                <section class="hero glass-card">
+                    <div class="hero-content">
+                        <h1 data-i18n="hero_title">Smart Crop Doctor</h1>
+                        <p data-i18n="hero_desc">Upload a photo of your plant's leaves and our advanced AI will detect diseases instantly, providing actionable treatment recommendations.</p>
+                        <button class="btn primary-btn"><i class="fa-solid fa-upload"></i> <span data-i18n="btn_start">Start Analysis</span></button>
+                    </div>
+                </section>
+
+                <!-- Weather Dashboard Section -->
+                <section id="weatherSection" class="weather-section"></section>
+
+                <div class="dashboard-grid">
+                    <!-- Upload Card -->
+                    <div class="upload-card glass-card">
+                        <h3 data-i18n="card_new_detection">New Detection</h3>
+                        <div class="upload-area" id="uploadArea">
+                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                            <p data-i18n="upload_instructions">Drag & drop an image here or use options below</p>
+                            <div class="upload-actions-inline" style="margin-top: 16px; display: flex; gap: 12px; z-index: 2; position: relative;">
+                                <button class="btn secondary-btn" id="browseGalleryBtn"><i class="fa-solid fa-image"></i> <span data-i18n="btn_gallery">Gallery</span></button>
+                                <button class="btn secondary-btn" id="openCameraBtn"><i class="fa-solid fa-camera"></i> <span data-i18n="btn_camera">Camera</span></button>
+                            </div>
+                            <input type="file" id="fileInput" hidden accept="image/*">
+                        </div>
+                        <div class="preview-area" id="previewArea" style="display: none;">
+                            <img id="imagePreview" src="" alt="Preview">
+                            <div class="preview-actions">
+                                <button class="btn secondary-btn" id="removeImageBtn" data-i18n="btn_remove">Remove</button>
+                                <button class="btn primary-btn" id="analyzeBtn" data-i18n="btn_analyze">Analyze Image</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="stats-container">
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                            <div class="stat-info">
+                                <h4 data-i18n="stat_scans">Total Scans</h4>
+                                <h2>128</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon healthy"><i class="fa-solid fa-shield-halved"></i></div>
+                            <div class="stat-info">
+                                <h4 data-i18n="stat_healthy">Healthy Plants</h4>
+                                <h2>85%</h2>
+                            </div>
+                        </div>
+                        <div class="stat-card glass-card">
+                            <div class="stat-icon alert"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="stat-info">
+                                <h4 data-i18n="stat_alerts">Recent Alerts</h4>
+                                <h2>3</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Placeholder -->
+                <section class="recent-activity glass-card">
+                    <h3 data-i18n="activity_title">Recent Analyses</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <div class="item-img"><i class="fa-solid fa-image"></i></div>
+                            <div class="item-details">
+                                <h4 data-i18n="disease_late_blight">Late Blight</h4>
+                                <p>Detected: <span data-i18n="disease_late_blight">Late Blight</span></p>
+                            </div>
+                            <div class="item-status status-danger" data-i18n="results_chemical">Action Required</div>
+                            <div class="item-time">2h ago</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- AI Results Section -->
+                <section id="resultsSection" class="results-section glass-card" style="display: none;">
+                    <div class="results-header">
+                        <div class="disease-badge">
+                            <h2 id="resultDisease">Disease Name</h2>
+                            <span id="resultConfidence" class="confidence-tag">95% Confidence</span>
+                        </div>
+                        <button class="btn secondary-btn" id="newScanBtn"><i class="fa-solid fa-rotate"></i> <span data-i18n="btn_new_scan">New Scan</span></button>
+                    </div>
+
+                    <div class="results-grid">
+                        <div class="result-info-card">
+                            <i class="fa-solid fa-microscope info-icon"></i>
+                            <div class="info-text">
+                                <h3 data-i18n="results_symptoms">Symptoms</h3>
+                                <p id="resultSymptoms">Details about symptoms...</p>
+                            </div>
+                        </div>
+                        <div class="result-info-card">
+                            <i class="fa-solid fa-dna info-icon"></i>
+                            <div class="info-text">
+                                <h3 data-i18n="results_causes">Causes</h3>
+                                <p id="resultCauses">Details about causes...</p>
+                            </div>
+                        </div>
+                        <div class="result-info-card success">
+                            <i class="fa-solid fa-leaf info-icon"></i>
+                            <div class="info-text">
+                                <h3 data-i18n="results_organic">Organic Treatment</h3>
+                                <p id="resultOrganic">Details about organic treatment...</p>
+                            </div>
+                        </div>
+                        <div class="result-info-card danger">
+                            <i class="fa-solid fa-flask info-icon"></i>
+                            <div class="info-text">
+                                <h3 data-i18n="results_chemical">Chemical Treatment</h3>
+                                <p id="resultChemical">Details about chemical treatment...</p>
+                            </div>
+                        </div>
+                        <div class="result-info-card warning">
+                            <i class="fa-solid fa-shield-virus info-icon"></i>
+                            <div class="info-text">
+                                <h3 data-i18n="results_prevention">Prevention Tips</h3>
+                                <p id="resultPrevention">Details about prevention...</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="cameraModal" class="camera-modal">
+        <div class="camera-container glass-card">
+            <div class="camera-header">
+                <h3 data-i18n="modal_photo">Take a Photo</h3>
+                <button id="closeCameraBtn" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="video-wrapper">
+                <video id="cameraStream" autoplay playsinline></video>
+            </div>
+            <div class="camera-actions-modal">
+                <button class="btn primary-btn" id="captureBtn"><i class="fa-solid fa-camera"></i> <span data-i18n="btn_capture">Capture</span></button>
+            </div>
+            <canvas id="cameraCanvas" style="display: none;"></canvas>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loader-content glass-card">
+            <i class="fa-solid fa-circle-notch fa-spin"></i>
+            <p data-i18n="loading_text">Processing Image...</p>
+        </div>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="auth.js"></script>
+    <script src="translations.js"></script>
+    <script src="weather.js"></script>
+    <script src="ml.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

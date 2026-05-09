@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login — AgriTech</title>
+    <link rel="stylesheet" href="auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDK (compat) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="db.js"></script>
+    <script src="auth.js"></script>
+</head>
+<body>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+
+            <!-- Brand -->
+            <div class="auth-brand">
+                <div class="brand-icon">🌿</div>
+                <h1>AgriTech</h1>
+            </div>
+
+            <!-- Title -->
+            <h2 class="auth-title">Welcome back</h2>
+            <p class="auth-subtitle">Sign in to access your crop health dashboard.</p>
+
+            <!-- Alert -->
+            <div id="authAlert" class="auth-alert error" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span id="authAlertMsg">Invalid email or password.</span>
+            </div>
+
+            <!-- Login Form -->
+            <form class="auth-form" id="loginForm" novalidate>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email address</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="email"
+                            id="email"
+                            class="form-input"
+                            placeholder="farmer@example.com"
+                            autocomplete="email"
+                            required>
+                        <i class="fa-solid fa-envelope"></i>
+                    </div>
+                    <span class="field-error" id="emailError">Please enter a valid email.</span>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            class="form-input has-toggle"
+                            placeholder="Your password"
+                            autocomplete="current-password"
+                            required>
+                        <i class="fa-solid fa-lock"></i>
+                        <button type="button" class="toggle-password" id="togglePwd" aria-label="Show password">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="field-error" id="passwordError">Password is required.</span>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-primary" id="loginBtn">
+                    <div class="spinner" id="loginSpinner"></div>
+                    <span id="loginBtnText"><i class="fa-solid fa-right-to-bracket"></i> Sign In</span>
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="auth-divider" style="margin-top:20px;">or continue with</div>
+
+            <!-- Google -->
+            <button class="btn-secondary" id="googleBtn" style="margin-top:12px;">
+                <div class="google-logo"></div>
+                Continue with Google
+            </button>
+
+            <!-- Guest -->
+            <button class="btn-guest" id="guestBtn" style="margin-top:10px;">
+                <i class="fa-solid fa-user-slash"></i>
+                Continue as Guest (no account needed)
+            </button>
+
+            <!-- Footer -->
+            <p class="auth-footer">
+                Don't have an account? <a href="signup.html">Create one free</a>
+            </p>
+
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        // Check if already logged in → skip to app
+        const cached = AuthService.getCachedUser();
+        if (cached && !cached.isGuest) {
+            window.location.href = 'index.html';
+        }
+
+        const form       = document.getElementById('loginForm');
+        const emailEl    = document.getElementById('email');
+        const passwordEl = document.getElementById('password');
+        const loginBtn   = document.getElementById('loginBtn');
+        const spinner    = document.getElementById('loginSpinner');
+        const btnText    = document.getElementById('loginBtnText');
+        const alert_     = document.getElementById('authAlert');
+        const alertMsg   = document.getElementById('authAlertMsg');
+        const googleBtn  = document.getElementById('googleBtn');
+        const guestBtn   = document.getElementById('guestBtn');
+        const togglePwd  = document.getElementById('togglePwd');
+
+        // ── Helpers ──────────────────────────────────────────
+        function showAlert(msg, type = 'error') {
+            alert_.className = `auth-alert ${type} visible`;
+            alertMsg.textContent = msg;
+        }
+        function hideAlert() { alert_.classList.remove('visible'); }
+
+        function setLoading(loading) {
+            loginBtn.disabled = loading;
+            spinner.style.display = loading ? 'block' : 'none';
+            btnText.style.display = loading ? 'none' : 'flex';
+        }
+
+        function showFieldError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.classList.add('visible');
+        }
+        function clearErrors() {
+            ['emailError', 'passwordError'].forEach(id => {
+                document.getElementById(id).classList.remove('visible');
+            });
+            hideAlert();
+        }
+
+        function friendlyError(code) {
+            const map = {
+                'auth/user-not-found':    'No account found with this email. Please sign up.',
+                'auth/wrong-password':    'Incorrect password. Please try again.',
+                'auth/invalid-email':     'Please enter a valid email address.',
+                'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
+                'auth/network-request-failed': 'Network error. Check your connection.',
+            };
+            return map[code] || 'Sign in failed. Please try again.';
+        }
+
+        // ── Password toggle ───────────────────────────────────
+        togglePwd.addEventListener('click', () => {
+            const isText = passwordEl.type === 'text';
+            passwordEl.type = isText ? 'password' : 'text';
+            togglePwd.querySelector('i').className = isText ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+        });
+
+        // ── Email / Password Login ────────────────────────────
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const email    = emailEl.value.trim();
+            const password = passwordEl.value;
+            let valid = true;
+
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showFieldError('emailError', 'Please enter a valid email address.');
+                valid = false;
+            }
+            if (!password) {
+                showFieldError('passwordError', 'Password is required.');
+                valid = false;
+            }
+            if (!valid) { form.classList.add('shake'); setTimeout(() => form.classList.remove('shake'), 400); return; }
+
+            if (!AuthService.isConfigured()) {
+                showAlert('Firebase not configured. Use Guest mode or add your Firebase config to auth.js.', 'error');
+                return;
+            }
+
+            setLoading(true);
+            try {
+                await AuthService.signInWithEmail(email, password);
+                window.location.href = 'index.html';
+            } catch (err) {
+                showAlert(friendlyError(err.code));
+                form.classList.add('shake');
+                setTimeout(() => form.classList.remove('shake'), 400);
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // ── Google Login ──────────────────────────────────────
+        googleBtn.addEventListener('click', async () => {
+            clearErrors();
+            if (!AuthService.isConfigured()) {
+                showAlert('Firebase not configured. Use Guest mode or add your Firebase config to auth.js.', 'error');
+                return;
+            }
+            try {
+                await AuthService.signInWithGoogle();
+                window.location.href = 'index.html';
+            } catch (err) {
+                showAlert(friendlyError(err.code));
+            }
+        });
+
+        // ── Guest Mode ────────────────────────────────────────
+        guestBtn.addEventListener('click', async () => {
+            await AuthService.signInAsGuest();
+            window.location.href = 'index.html';
+        });
+
+    })();
+    </script>
+</body>
+</html>

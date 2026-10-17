@@ -4,6 +4,7 @@ const translations = {
         sidebar_dashboard: "Dashboard",
         sidebar_detect: "Detect Disease",
         sidebar_history: "History",
+        sidebar_community: "Community",
         sidebar_guide: "Crop Guide",
         sidebar_settings: "Settings",
         hero_title: "Smart Crop Doctor",
@@ -29,21 +30,32 @@ const translations = {
         results_organic: "Organic Treatment",
         results_chemical: "Chemical Treatment",
         results_prevention: "Prevention Tips",
+        results_seasonal_risk: "Weather & Seasonal Risk",
+        community_title: "Farmer Community",
+        community_placeholder: "Share your experience or ask for advice...",
+        btn_post: "Post",
+        community_likes: "Likes",
+        community_comments: "Comments",
+        advisor_title: "Spraying Advisor",
+        advisor_good: "Excellent time to spray! Wind and humidity are optimal.",
+        advisor_bad: "Not recommended to spray. High wind or rain detected.",
+        advisor_loading: "Analyzing weather conditions...",
 
         // Disease Data
         disease_late_blight: "Late Blight",
         symptoms_late_blight: "Small, dark, water-soaked spots on leaves that rapidly enlarge. White fungal growth may appear on the underside in humid weather.",
-        causes_late_blight: "Fungus-like organism which thrives in cool, wet environments.",
-        organic_late_blight: "Apply copper-based fungicides. Remove and destroy infected foliage immediately.",
+        causes_late_blight: "Caused by the oomycete Phytophthora infestans. It spreads via airborne spores (sporangia) from infected cull piles, volunteer plants, or neighboring fields.",
+        organic_late_blight: "Copper-based fungicides (fixed copper). Bio-fungicides containing Bacillus subtilis. Immediate removal and destruction of infected plant tissue (do not compost). Applying a thick layer of mulch to prevent spores from splashing from the soil onto leaves.",
         chemical_late_blight: "Use Chlorothalonil or Mancozeb sprays. Alternate fungicides.",
         prevention_late_blight: "Plant resistant varieties. Rotate crops every 3 years. Avoid overhead watering.",
+        risk_late_blight: "High risk occurs during cool, wet periods. Optimal conditions are temperatures between 15°C and 21°C with relative humidity above 90%. Risk is highest in late summer and autumn when morning dew and fog are frequent.",
 
         disease_powdery_mildew: "Powdery Mildew",
         symptoms_powdery_mildew: "White, flour-like spots or patches on the upper surface of leaves, stems, and fruits.",
         causes_powdery_mildew: "Various fungal species that thrive in high humidity and moderate temperatures.",
-        organic_powdery_mildew: "Spray neem oil or a mixture of baking soda, water, and non-detergent soap.",
-        chemical_powdery_mildew: "Apply sulfur-based fungicides or Myclobutanil.",
-        prevention_powdery_mildew: "Prune for better air circulation. Avoid high-nitrogen fertilizers.",
+        organic_powdery_mildew: "• Bacillus subtilis sprays\n• Neem oil\n• Potassium Bicarbonate to alter leaf pH",
+        chemical_powdery_mildew: "• Chlorothalonil\n• Mancozeb-based fungicides applied at first sign of infection",
+        prevention_powdery_mildew: "• Use drip irrigation to keep leaves dry\n• Increase plant spacing for airflow\n• Rotate crops",
 
         disease_healthy: "Healthy Leaf",
         symptoms_healthy: "Normal green coloration, firm texture, and no visible spots or fungal growth.",
@@ -80,6 +92,7 @@ const translations = {
         sidebar_dashboard: "डैशबोर्ड",
         sidebar_detect: "रोग पहचानें",
         sidebar_history: "इतिहास",
+        sidebar_community: "समुदाय",
         sidebar_guide: "फसल गाइड",
         sidebar_settings: "सेटिंग्स",
         hero_title: "स्मार्ट फसल डॉक्टर",
@@ -105,6 +118,12 @@ const translations = {
         results_organic: "जैविक उपचार",
         results_chemical: "रासायनिक उपचार",
         results_prevention: "बचाव के उपाय",
+        results_seasonal_risk: "मौसम और मौसमी जोखिम",
+        community_title: "किसान समुदाय",
+        community_placeholder: "अपना अनुभव साझा करें या सलाह मांगें...",
+        btn_post: "पोस्ट करें",
+        community_likes: "पसंद",
+        community_comments: "टिप्पणियाँ",
 
         // Disease Data
         disease_late_blight: "लेट ब्लाइट (झुलसा)",
@@ -156,6 +175,7 @@ const translations = {
         sidebar_dashboard: "ಡ್ಯಾಶ್‌ಬೋರ್ಡ್",
         sidebar_detect: "ರೋಗ ಪತ್ತೆಹಚ್ಚಿ",
         sidebar_history: "ಇತಿಹಾಸ",
+        sidebar_community: "ಸಮುದಾಯ",
         sidebar_guide: "ಬೆಳೆ ಮಾರ್ಗದರ್ಶಿ",
         sidebar_settings: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು",
         hero_title: "ಸ್ಮಾರ್ಟ್ ಬೆಳೆ ವೈದ್ಯ",
@@ -181,6 +201,12 @@ const translations = {
         results_organic: "ಸಾವಯವ ಚಿಕಿತ್ಸೆ",
         results_chemical: "ರಾಸಾಯನಿಕ ಚಿಕಿತ್ಸೆ",
         results_prevention: "ತಡೆಗಟ್ಟುವಿಕೆ",
+        results_seasonal_risk: "ಹವಾಮಾನ ಮತ್ತು ಕಾಲೋಚಿತ ಅಪಾಯ",
+        community_title: "ರೈತ ಸಮುದಾಯ",
+        community_placeholder: "ನಿಮ್ಮ ಅನುಭವವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ಸಲಹೆ ಕೇಳಿ...",
+        btn_post: "ಪೋಸ್ಟ್ ಮಾಡಿ",
+        community_likes: "ಲೈಕ್ಸ್",
+        community_comments: "ಕಾಮೆಂಟ್ಗಳು",
 
         // Disease Data
         disease_late_blight: "ಲೇಟ್ ಬ್ಲೈಟ್ (ಕೊಳೆ ರೋಗ)",
@@ -232,6 +258,7 @@ const translations = {
         sidebar_dashboard: "டாஷ்போர்டு",
         sidebar_detect: "நோயைக் கண்டுபிடி",
         sidebar_history: "வரலாறு",
+        sidebar_community: "சமூகம்",
         sidebar_guide: "பயிர் வழிகாட்டி",
         sidebar_settings: "அமைப்புகள்",
         hero_title: "ஸ்மார்ட் பயிர் மருத்துவர்",
@@ -257,6 +284,12 @@ const translations = {
         results_organic: "இயற்கை சிகிச்சை",
         results_chemical: "இரசாயன சிகிச்சை",
         results_prevention: "தடுப்பு முறைகள்",
+        results_seasonal_risk: "வானிலை மற்றும் பருவகால ஆபத்து",
+        community_title: "விவசாயி சமூகம்",
+        community_placeholder: "உங்கள் அனுபவத்தைப் பகிரவும் அல்லது ஆலோசனை கேட்கவும்...",
+        btn_post: "பதிவு செய்",
+        community_likes: "விருப்பங்கள்",
+        community_comments: "கருத்துகள்",
 
         // Disease Data
         disease_late_blight: "லேட் பிளைட்",
@@ -308,6 +341,7 @@ const translations = {
         sidebar_dashboard: "డాష్‌బోర్డ్",
         sidebar_detect: "వ్యాధిని గుర్తించండి",
         sidebar_history: "చరిత్ర",
+        sidebar_community: "కమ్యూనిటీ",
         sidebar_guide: "పంట గైడ్",
         sidebar_settings: "సెట్టింగులు",
         hero_title: "స్మార్ట్ క్రాప్ డాక్టర్",
@@ -333,6 +367,12 @@ const translations = {
         results_organic: "సేంద్రీయ చికిత్స",
         results_chemical: "రసాయన చికిత్స",
         results_prevention: "నివారణ చర్యలు",
+        results_seasonal_risk: "వాతావరణం & కాలానుగుణ ప్రమాదం",
+        community_title: "రైతు సంఘం",
+        community_placeholder: "మీ అనుభవాన్ని పంచుకోండి లేదా సలహా అడగండి...",
+        btn_post: "పోస్ట్ చేయండి",
+        community_likes: "లైక్లు",
+        community_comments: "కామెంట్లు",
 
         disease_late_blight: "లేట్ బ్లైట్",
         symptoms_late_blight: "ఆకులపై చిన్న, ముదురు నీటి మచ్చలు.",
@@ -383,6 +423,7 @@ const translations = {
         sidebar_dashboard: "ഡാഷ്‌ബോർഡ്",
         sidebar_detect: "രോഗം കണ്ടെത്തുക",
         sidebar_history: "ചരിത്രം",
+        sidebar_community: "കമ്മ്യൂണിറ്റി",
         sidebar_guide: "വിള ഗൈഡ്",
         sidebar_settings: "ക്രമീകരണങ്ങൾ",
         hero_title: "സ്മാർട്ട് വിള ഡോക്ടർ",
@@ -408,6 +449,12 @@ const translations = {
         results_organic: "ജൈവ ചികിത്സ",
         results_chemical: "രാസ ചികിത്സ",
         results_prevention: "പ്രതിരോധ മാർഗ്ഗങ്ങൾ",
+        results_seasonal_risk: "കാലാവസ്ഥാ & സീസണൽ റിസ്ക്",
+        community_title: "കർഷക കൂട്ടായ്മ",
+        community_placeholder: "നിങ്ങളുടെ അനുഭവം പങ്കിടുക അല്ലെങ്കിൽ ഉപദേശം ചോദിക്കുക...",
+        btn_post: "പോസ്റ്റ് ചെയ്യുക",
+        community_likes: "ലൈക്കുകൾ",
+        community_comments: "അഭിപ്രായങ്ങൾ",
 
         disease_late_blight: "ലേറ്റ് ബ്ലൈറ്റ് (വാട്ടം)",
         symptoms_late_blight: "ഇലകളിൽ ചെറിയ, ഇരുണ്ട ജലം നിറഞ്ഞ പാടുകൾ.",
@@ -466,5 +513,18 @@ function getTranslation(lang, key) {
     return key;
 }
 
+function applyTranslations(lang) {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const translation = getTranslation(lang, key);
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = translation;
+        } else {
+            el.textContent = translation;
+        }
+    });
+}
+
 window.translations = translations;
 window.getTranslation = getTranslation;
+window.applyTranslations = applyTranslations;

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,11 +16,13 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 </head>
+
 <body>
     <!-- Offline Banner -->
     <div id="offlineBanner" class="offline-banner">
         <i class="fa-solid fa-wifi-slash"></i>
-        <span data-i18n="offline_banner">You are currently offline. Working in offline mode. Reports will be saved and synced later.</span>
+        <span data-i18n="offline_banner">You are currently offline. Working in offline mode. Reports will be saved and
+            synced later.</span>
     </div>
 
     <div class="app-container">
@@ -31,11 +34,18 @@
                 <button class="close-sidebar" id="closeSidebar"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <ul class="nav-links">
-                <li class="active"><a href="#"><i class="fa-solid fa-house"></i> <span data-i18n="sidebar_dashboard">Dashboard</span></a></li>
-                <li><a href="#"><i class="fa-solid fa-camera"></i> <span data-i18n="sidebar_detect">Detect Disease</span></a></li>
-                <li><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> <span data-i18n="sidebar_history">History</span></a></li>
-                <li><a href="#"><i class="fa-solid fa-book"></i> <span data-i18n="sidebar_guide">Crop Guide</span></a></li>
-                <li><a href="#"><i class="fa-solid fa-gear"></i> <span data-i18n="sidebar_settings">Settings</span></a></li>
+                <li class="active" data-view="dashboardView"><a href="#"><i class="fa-solid fa-house"></i> <span
+                            data-i18n="sidebar_dashboard">Dashboard</span></a></li>
+                <li data-view="dashboardView"><a href="#"><i class="fa-solid fa-camera"></i> <span
+                            data-i18n="sidebar_detect">Detect Disease</span></a></li>
+                <li data-view="historyView"><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> <span
+                            data-i18n="sidebar_history">History</span></a></li>
+                <li data-view="communityView"><a href="#"><i class="fa-solid fa-users"></i> <span
+                            data-i18n="sidebar_community">Community</span></a></li>
+                <li data-view="guideView"><a href="#"><i class="fa-solid fa-book"></i> <span
+                            data-i18n="sidebar_guide">Crop Guide</span></a></li>
+                <li data-view="settingsView"><a href="#"><i class="fa-solid fa-gear"></i> <span
+                            data-i18n="sidebar_settings">Settings</span></a></li>
             </ul>
         </aside>
 
@@ -93,90 +103,225 @@
             </nav>
 
             <div class="content-wrapper">
-                <!-- Hero Section -->
-                <section class="hero glass-card">
-                    <div class="hero-content">
-                        <h1 data-i18n="hero_title">Smart Crop Doctor</h1>
-                        <p data-i18n="hero_desc">Upload a photo of your plant's leaves and our advanced AI will detect diseases instantly, providing actionable treatment recommendations.</p>
-                        <button class="btn primary-btn"><i class="fa-solid fa-upload"></i> <span data-i18n="btn_start">Start Analysis</span></button>
-                    </div>
-                </section>
+                <div id="dashboardView" class="view-section">
+                    <!-- Weather Dashboard Section (Prominent like Plantix) -->
+                    <section id="weatherSection" class="weather-section"></section>
 
-                <!-- Weather Dashboard Section -->
-                <section id="weatherSection" class="weather-section"></section>
-
-                <div class="dashboard-grid">
-                    <!-- Upload Card -->
-                    <div class="upload-card glass-card">
-                        <h3 data-i18n="card_new_detection">New Detection</h3>
-                        <div class="upload-area" id="uploadArea">
-                            <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
-                            <p data-i18n="upload_instructions">Drag & drop an image here or use options below</p>
-                            <div class="upload-actions-inline" style="margin-top: 16px; display: flex; gap: 12px; z-index: 2; position: relative;">
-                                <button class="btn secondary-btn" id="browseGalleryBtn"><i class="fa-solid fa-image"></i> <span data-i18n="btn_gallery">Gallery</span></button>
-                                <button class="btn secondary-btn" id="openCameraBtn"><i class="fa-solid fa-camera"></i> <span data-i18n="btn_camera">Camera</span></button>
-                            </div>
-                            <input type="file" id="fileInput" hidden accept="image/*">
-                        </div>
-                        <div class="preview-area" id="previewArea" style="display: none;">
-                            <img id="imagePreview" src="" alt="Preview">
-                            <div class="preview-actions">
-                                <button class="btn secondary-btn" id="removeImageBtn" data-i18n="btn_remove">Remove</button>
-                                <button class="btn primary-btn" id="analyzeBtn" data-i18n="btn_analyze">Analyze Image</button>
-                            </div>
+                    <!-- Spraying Advisor (Smart Widget) -->
+                    <div id="sprayingAdvisor" class="spraying-advisor glass-card" style="display: none;">
+                        <div class="advisor-icon"><i class="fa-solid fa-droplet"></i></div>
+                        <div class="advisor-content">
+                            <h4 data-i18n="advisor_title">Spraying Advisor</h4>
+                            <p id="advisorText">Loading advice...</p>
                         </div>
                     </div>
 
-                    <!-- Stats Cards -->
-                    <div class="stats-container">
-                        <div class="stat-card glass-card">
-                            <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
-                            <div class="stat-info">
-                                <h4 data-i18n="stat_scans">Total Scans</h4>
-                                <h2>128</h2>
+                    <!-- Hero Section -->
+                    <section class="hero glass-card">
+                        <div class="hero-content">
+                            <h1 data-i18n="hero_title">Smart Crop Doctor</h1>
+                            <p data-i18n="hero_desc">Upload a photo of your plant's leaves and our advanced AI will
+                                detect diseases instantly, providing actionable treatment recommendations.</p>
+                            <button class="btn primary-btn"><i class="fa-solid fa-upload"></i> <span
+                                    data-i18n="btn_start">Start Analysis</span></button>
+                        </div>
+                    </section>
+
+                    <div class="dashboard-grid">
+                        <!-- Upload Card -->
+                        <div class="upload-card glass-card">
+                            <h3 data-i18n="card_new_detection">New Detection</h3>
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fa-solid fa-cloud-arrow-up upload-icon"></i>
+                                <p data-i18n="upload_instructions">Drag & drop an image here or use options below</p>
+                                <div class="upload-actions-inline"
+                                    style="margin-top: 16px; display: flex; gap: 12px; z-index: 2; position: relative;">
+                                    <button class="btn secondary-btn" id="browseGalleryBtn" type="button">
+                                        <i class="fa-solid fa-image"></i> <span data-i18n="btn_gallery">Gallery</span>
+                                    </button>
+                                    <button class="btn secondary-btn" id="openCameraBtn">
+                                        <i class="fa-solid fa-camera"></i> <span data-i18n="btn_camera">Camera</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <input type="file" id="fileInput" style="display: none;" accept="image/*">
+                            <input type="file" id="cameraInput" style="display: none;" accept="image/*"
+                                capture="environment">
+                            <div class="preview-area" id="previewArea" style="display: none;">
+                                <img id="imagePreview" src="" alt="Preview">
+                                <div class="preview-actions">
+                                    <button class="btn secondary-btn" id="removeImageBtn"
+                                        data-i18n="btn_remove">Remove</button>
+                                    <button class="btn primary-btn" id="analyzeBtn" data-i18n="btn_analyze">Analyze
+                                        Image</button>
+                                </div>
                             </div>
                         </div>
-                        <div class="stat-card glass-card">
-                            <div class="stat-icon healthy"><i class="fa-solid fa-shield-halved"></i></div>
-                            <div class="stat-info">
-                                <h4 data-i18n="stat_healthy">Healthy Plants</h4>
-                                <h2>85%</h2>
+
+                        <!-- Stats Cards -->
+                        <div class="stats-container">
+                            <div class="stat-card glass-card">
+                                <div class="stat-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                                <div class="stat-info">
+                                    <h4 data-i18n="stat_scans">Total Scans</h4>
+                                    <h2>128</h2>
+                                </div>
+                            </div>
+                            <div class="stat-card glass-card">
+                                <div class="stat-icon healthy"><i class="fa-solid fa-shield-halved"></i></div>
+                                <div class="stat-info">
+                                    <h4 data-i18n="stat_healthy">Healthy Plants</h4>
+                                    <h2>85%</h2>
+                                </div>
+                            </div>
+                            <div class="stat-card glass-card">
+                                <div class="stat-icon alert"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div class="stat-info">
+                                    <h4 data-i18n="stat_alerts">Recent Alerts</h4>
+                                    <h2>3</h2>
+                                </div>
                             </div>
                         </div>
-                        <div class="stat-card glass-card">
-                            <div class="stat-icon alert"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                            <div class="stat-info">
-                                <h4 data-i18n="stat_alerts">Recent Alerts</h4>
-                                <h2>3</h2>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <section class="recent-activity glass-card">
+                        <h3 data-i18n="activity_title">Recent Analyses</h3>
+                        <div class="activity-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </section>
+                </div>
+
+                <!-- History View -->
+                <div id="historyView" class="view-section" style="display: none;">
+                    <div class="view-header">
+                        <h2 data-i18n="sidebar_history">History</h2>
+                        <p>Detailed log of all your previous crop scans.</p>
+                    </div>
+                    <div id="fullHistoryList" class="activity-list" style="margin-top: 24px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Community View -->
+                <div id="communityView" class="view-section" style="display: none;">
+                    <div class="view-header">
+                        <h2 data-i18n="community_title">Farmer Community</h2>
+                        <p>Share knowledge, ask questions, and connect with other farmers.</p>
+                    </div>
+
+                    <!-- Create Post -->
+                    <div class="glass-card create-post-card" style="margin-top: 24px; padding: 20px;">
+                        <div class="post-input-wrapper">
+                            <img id="postUserAvatar" src="" alt=""
+                                style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color);">
+                            <textarea id="communityPostInput" data-i18n="community_placeholder"
+                                placeholder="Share your experience or ask for advice..."></textarea>
+                        </div>
+                        <div class="post-actions"
+                            style="display: flex; justify-content: flex-end; margin-top: 12px; gap: 12px;">
+                            <input type="file" id="communityFileInput" style="display: none;" accept="image/*">
+                            <button class="btn secondary-btn" id="attachImageBtn"><i
+                                    class="fa-solid fa-image"></i></button>
+                            <button class="btn primary-btn" id="submitPostBtn" data-i18n="btn_post">Post</button>
+                        </div>
+                    </div>
+
+                    <!-- Post Feed -->
+                    <div id="communityFeed" class="community-feed"
+                        style="margin-top: 24px; display: flex; flex-direction: column; gap: 20px;">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Crop Guide View -->
+                <div id="guideView" class="view-section" style="display: none;">
+                    <div class="view-header">
+                        <h2 data-i18n="sidebar_guide">Crop Guide</h2>
+                        <p>Learn about common diseases and how to prevent them.</p>
+                    </div>
+                    <div class="guide-grid"
+                        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 32px;">
+                        <div class="glass-card guide-card">
+                            <div class="guide-badge success"><i class="fa-solid fa-leaf"></i></div>
+                            <h3 data-i18n="disease_late_blight">Late Blight</h3>
+                            <p class="guide-desc" data-i18n="symptoms_late_blight"></p>
+                            <div class="guide-footer">
+                                <span class="tag"><i class="fa-solid fa-flask"></i> <span
+                                        data-i18n="results_chemical">Chemical</span></span>
+                                <span class="tag"><i class="fa-solid fa-vial"></i> <span
+                                        data-i18n="results_organic">Organic</span></span>
+                            </div>
+                        </div>
+                        <div class="glass-card guide-card">
+                            <div class="guide-badge warning"><i class="fa-solid fa-cloud-sun"></i></div>
+                            <h3 data-i18n="disease_powdery_mildew">Powdery Mildew</h3>
+                            <p class="guide-desc" data-i18n="symptoms_powdery_mildew"></p>
+                            <div class="guide-footer">
+                                <span class="tag"><i class="fa-solid fa-flask"></i> <span
+                                        data-i18n="results_chemical">Chemical</span></span>
+                            </div>
+                        </div>
+                        <div class="glass-card guide-card">
+                            <div class="guide-badge danger"><i class="fa-solid fa-bacteria"></i></div>
+                            <h3 data-i18n="disease_leaf_spot">Tomato Leaf Spot</h3>
+                            <p class="guide-desc" data-i18n="symptoms_leaf_spot"></p>
+                            <div class="guide-footer">
+                                <span class="tag"><i class="fa-solid fa-vial"></i> <span
+                                        data-i18n="results_organic">Organic</span></span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Activity Placeholder -->
-                <section class="recent-activity glass-card">
-                    <h3 data-i18n="activity_title">Recent Analyses</h3>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="item-img"><i class="fa-solid fa-image"></i></div>
-                            <div class="item-details">
-                                <h4 data-i18n="disease_late_blight">Late Blight</h4>
-                                <p>Detected: <span data-i18n="disease_late_blight">Late Blight</span></p>
+                <!-- Settings View -->
+                <div id="settingsView" class="view-section" style="display: none;">
+                    <div class="view-header">
+                        <h2 data-i18n="sidebar_settings">Settings</h2>
+                        <p>Manage your account preferences and app configuration.</p>
+                    </div>
+                    <div class="settings-container glass-card" style="margin-top: 24px; padding: 24px;">
+                        <div class="settings-group">
+                            <h4>App Preferences</h4>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h5>Language</h5>
+                                    <p>Choose your preferred interface language</p>
+                                </div>
+                                <select id="settingsLanguageSelector" class="language-dropdown glass-card">
+                                    <option value="en">English</option>
+                                    <option value="kn">ಕನ್ನಡ (Kannada)</option>
+                                    <option value="hi">हिंदी (Hindi)</option>
+                                    <option value="ta">தமிழ் (Tamil)</option>
+                                    <option value="te">తెలుగు (Telugu)</option>
+                                    <option value="ml">മലയാളം (Malayalam)</option>
+                                </select>
                             </div>
-                            <div class="item-status status-danger" data-i18n="results_chemical">Action Required</div>
-                            <div class="item-time">2h ago</div>
+                            <div class="setting-item">
+                                <div class="setting-info">
+                                    <h5>Offline Mode</h5>
+                                    <p>Sync data automatically when back online</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </section>
+                </div>
 
                 <!-- AI Results Section -->
                 <section id="resultsSection" class="results-section glass-card" style="display: none;">
                     <div class="results-header">
                         <div class="disease-badge">
+                            <div class="plant-type-tag" id="resultPlantType">Detecting Plant...</div>
                             <h2 id="resultDisease">Disease Name</h2>
                             <span id="resultConfidence" class="confidence-tag">95% Confidence</span>
                         </div>
-                        <button class="btn secondary-btn" id="newScanBtn"><i class="fa-solid fa-rotate"></i> <span data-i18n="btn_new_scan">New Scan</span></button>
+                        <button class="btn secondary-btn" id="newScanBtn"><i class="fa-solid fa-rotate"></i> <span
+                                data-i18n="btn_new_scan">New Scan</span></button>
                     </div>
 
                     <div class="results-grid">
@@ -194,25 +339,49 @@
                                 <p id="resultCauses">Details about causes...</p>
                             </div>
                         </div>
-                        <div class="result-info-card success">
-                            <i class="fa-solid fa-leaf info-icon"></i>
+
+                        <div class="result-info-card" id="seasonalRiskCard">
+                            <i class="fa-solid fa-cloud-sun info-icon"></i>
                             <div class="info-text">
-                                <h3 data-i18n="results_organic">Organic Treatment</h3>
-                                <p id="resultOrganic">Details about organic treatment...</p>
+                                <h3 data-i18n="results_seasonal_risk">Seasonal Disease Risk</h3>
+                                <p id="resultSeasonalRisk">Analysis based on current weather...</p>
                             </div>
                         </div>
-                        <div class="result-info-card danger">
-                            <i class="fa-solid fa-flask info-icon"></i>
-                            <div class="info-text">
-                                <h3 data-i18n="results_chemical">Chemical Treatment</h3>
-                                <p id="resultChemical">Details about chemical treatment...</p>
+
+                        <div class="result-tabs">
+                            <button class="tab-btn active" data-tab="biological"
+                                data-i18n="results_organic">Biological</button>
+                            <button class="tab-btn" data-tab="chemical" data-i18n="results_chemical">Chemical</button>
+                            <button class="tab-btn" data-tab="cultural" data-i18n="results_prevention">Cultural</button>
+                        </div>
+
+                        <div id="tabBiological" class="tab-content active">
+                            <div class="result-info-card success">
+                                <i class="fa-solid fa-leaf info-icon"></i>
+                                <div class="info-text">
+                                    <h3 data-i18n="results_organic">Organic Treatment</h3>
+                                    <p id="resultOrganic">Details about organic treatment...</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="result-info-card warning">
-                            <i class="fa-solid fa-shield-virus info-icon"></i>
-                            <div class="info-text">
-                                <h3 data-i18n="results_prevention">Prevention Tips</h3>
-                                <p id="resultPrevention">Details about prevention...</p>
+
+                        <div id="tabChemical" class="tab-content">
+                            <div class="result-info-card danger">
+                                <i class="fa-solid fa-flask info-icon"></i>
+                                <div class="info-text">
+                                    <h3 data-i18n="results_chemical">Chemical Treatment</h3>
+                                    <p id="resultChemical">Details about chemical treatment...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="tabCultural" class="tab-content">
+                            <div class="result-info-card warning">
+                                <i class="fa-solid fa-shield-virus info-icon"></i>
+                                <div class="info-text">
+                                    <h3 data-i18n="results_prevention">Prevention & Cultivation</h3>
+                                    <p id="resultPrevention">Details about prevention...</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -232,7 +401,8 @@
                 <video id="cameraStream" autoplay playsinline></video>
             </div>
             <div class="camera-actions-modal">
-                <button class="btn primary-btn" id="captureBtn"><i class="fa-solid fa-camera"></i> <span data-i18n="btn_capture">Capture</span></button>
+                <button class="btn primary-btn" id="captureBtn"><i class="fa-solid fa-camera"></i> <span
+                        data-i18n="btn_capture">Capture</span></button>
             </div>
             <canvas id="cameraCanvas" style="display: none;"></canvas>
         </div>
@@ -246,11 +416,44 @@
         </div>
     </div>
 
+    <!-- Floating Chatbot Component -->
+    <div id="agritech-chatbot-container" class="chatbot-container">
+        <!-- Chat Window -->
+        <div id="agritech-chat-window" class="chat-window glass-card">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <i class="fa-solid fa-robot"></i>
+                    <span>Chatbot</span>
+                </div>
+                <button id="close-chat-btn" class="close-chat-btn" aria-label="Close Chat">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <div class="message bot-message" data-i18n="chat_welcome_msg">
+                    Hello! I am your AgriTech Assistant. How can I help you with your crops today?
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type your message..." data-i18n="chat_placeholder" />
+                <button id="send-msg-btn" class="send-msg-btn" aria-label="Send Message">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Floating Toggle Button -->
+        <button id="chatbot-toggle-btn" class="chatbot-toggle-btn" aria-label="Toggle Chat">
+            <i class="fa-solid fa-comment-dots"></i>
+        </button>
+    </div>
+
     <script src="db.js"></script>
     <script src="auth.js"></script>
     <script src="translations.js"></script>
     <script src="weather.js"></script>
-    <script src="ml.js"></script>
-    <script src="app.js"></script>
+    <script src="ml.js?v=2"></script>
+    <script src="app.js?v=2"></script>
 </body>
+
 </html>

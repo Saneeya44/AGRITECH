@@ -16,6 +16,7 @@ window.WeatherService = {
             const coords = await this.getLocation();
             const data = await this.fetchWeather(coords.lat, coords.lon);
             this.renderWeather(data);
+            if (window.updateSprayingAdvisor) window.updateSprayingAdvisor(data);
             // Log to Firestore (non-blocking)
             if (window.DBService && !data.isMock) {
                 DBService.weatherLogs.logWeather({
